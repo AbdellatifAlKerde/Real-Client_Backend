@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import connectDB from './config/db.js';
+import router from './routes/userRoutes.js';
+import User from './models/userModel.js';
 
 dotenv.config();
 
@@ -16,6 +18,7 @@ if (process.env.NODE_ENV === "development"){
 }
 
 app.use(express.json());
+app.use('/user', User);
 
 app.get('/', (req, res) => {
    res.send('API is running!')
