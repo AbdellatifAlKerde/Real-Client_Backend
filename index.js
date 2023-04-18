@@ -4,6 +4,7 @@ import morgan from "morgan";
 import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import trainingRoutes from "./routes/trainingRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/admin", adminRoutes);
 app.use("/api/training", trainingRoutes);
+app.use('/category' , categoryRoutes);
 
 app.listen(
   PORT,
