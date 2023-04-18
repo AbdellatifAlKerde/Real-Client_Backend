@@ -5,8 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "start": "node index",
-  "dev": "nodemon index"
+    "start": "node index",
+    "dev": "nodemon index"
   },
   "repository": {
     "type": "git",
@@ -20,8 +20,12 @@
   },
   "homepage": "https://github.com/AbdellatifAlKerde/Real-Client_Backend#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
+    "email-validator": "^2.0.4",
     "express": "^4.18.2",
+    "file-system": "^2.2.2",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1"
