@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 import bcrypt from "bcrypt";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -37,6 +38,8 @@ adminSchema.methods.isValidPassword = async function (password) {
     throw error;
   }
 };
+
+adminSchema.plugin(mongoosePaginate);
 
 const Admin = model("Admin", adminSchema);
 export default Admin;

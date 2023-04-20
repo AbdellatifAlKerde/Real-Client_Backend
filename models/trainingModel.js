@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 const { Schema, model } = mongoose;
 
 const trainingSchema = new Schema(
@@ -20,6 +21,8 @@ const trainingSchema = new Schema(
     collection: "trainings",
   }
 );
+
+trainingSchema.plugin(mongoosePaginate);
 
 const Training = model("Training", trainingSchema);
 export default Training;

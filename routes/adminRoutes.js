@@ -10,5 +10,6 @@ router.post("/register", controller.post);
 router.post("/login", controller.login);
 router.put("/:id", controller.put);
 router.delete("/:id", controller.deleteOne);
+router.post("/logout", controller.logOut);
 
 export default router;

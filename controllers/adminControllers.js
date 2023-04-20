@@ -5,8 +5,29 @@ import jwt from "jsonwebtoken";
 // get all admins
 export async function getAll(req, res, next) {
   try {
-    const admins = await Admin.find({});
-    res.status(200).json(admins);
+    const { page, limit } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Paginate items using mongoose-paginate-v2
+    const options = {
+      page: pageNumber || 1,
+      limit: limitNumber || 10,
+    };
+
+    const items = await Admin.paginate({}, options);
+
+    // const admins = await Admin.find({});
+    // res.status(200).json(admins);
+    // Return paginated items as response
+    return res.status(200).json({
+      items: items.docs,
+      totalPages: items.totalPages,
+      currentPage: items.page,
+      limit: items.limit,
+      totalItems: items.totalDocs,
+    });
   } catch (err) {
     next(err);
   }
@@ -31,7 +52,7 @@ export async function post(req, res, next) {
     const { full_name, email, password } = req.body;
 
     // check if admin already exists
-    const oldAdmin = await Admin.findOne({ full_name });
+    const oldAdmin = await Admin.findOne({ email });
 
     if (oldAdmin) {
       return res.status(409).send("Admin already exists, please login");
@@ -117,11 +138,21 @@ export async function login(req, res, next) {
       expiresIn: "1h",
     });
 
+    // save admin token
+    res.cookie("jwt", token);
+
     // Return response with token
-    return res.status(200).send({ message: "Login successful", admin, token });
+    return res
+      .status(200)
+      .send({ message: "Login successfully", admin, token });
   } catch (error) {
     next(error);
   }
+}
+
+export function logOut(req, res) {
+  res.clearCookie("jwt");
+  return res.send("Log out successfully");
 }
 
 const controller = {
@@ -131,6 +162,7 @@ const controller = {
   put,
   deleteOne,
   login,
+  logOut,
 };
 
 export default controller;
