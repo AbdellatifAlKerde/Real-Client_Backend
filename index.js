@@ -2,8 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import connectDB from './config/db.js';
-import router from './routes/userRoutes.js';
-import User from './models/userModel.js';
+import userRoutes from './routes/userRoutes.js'
 
 dotenv.config();
 
@@ -18,10 +17,12 @@ if (process.env.NODE_ENV === "development"){
 }
 
 app.use(express.json());
-app.use('/user', User);
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/api/user', userRoutes);
 
 app.get('/', (req, res) => {
    res.send('API is running!')
 })
 
-app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}!!!`))
+app.listen(PORT, console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}!`))
