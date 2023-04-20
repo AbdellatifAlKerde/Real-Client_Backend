@@ -5,7 +5,7 @@ import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import trainingRoutes from "./routes/trainingRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
-
+import productRoutes from "./routes/productRoutes.js";
 dotenv.config();
 
 await connectDB();
@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 app.use("/api/admin", adminRoutes);
 app.use("/api/training", trainingRoutes);
 app.use('/category' , categoryRoutes);
-
+app.use("/product" , productRoutes);
 app.listen(
   PORT,
   console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}!!!`)
