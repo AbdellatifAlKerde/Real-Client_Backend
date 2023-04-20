@@ -30,7 +30,6 @@ export const getUserById = async (req, res, next) => {
 
 //User Registration
 export const signup_user = async (req, res, next) => {
-  console.log(req.body);
   try {
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser)
