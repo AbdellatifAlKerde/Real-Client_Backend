@@ -1,12 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import userRoutes from './routes/userRoutes.js';
+import userRoutes from "./routes/userRoutes.js";
 import trainingRoutes from "./routes/trainingRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import protectedRoutes from "./routes/protectedRoutes.js";
 
 dotenv.config();
 
@@ -21,15 +24,18 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
   res.send("API is running!");
 });
 app.use("/api/admin", adminRoutes);
-app.use('/api/user', userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/training", trainingRoutes);
-app.use('/api/category' , categoryRoutes);
-app.use("/api/product" , productRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/product", productRoutes);
+app.use("/", protectedRoutes);
 
 app.listen(
   PORT,
