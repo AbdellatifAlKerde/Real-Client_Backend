@@ -1,6 +1,7 @@
 import express from "express";
 const router = express.Router();
 import controller from "../controllers/adminControllers.js";
+import { authenticateUser } from "../middleware/authMiddleware.js";
 
 router.get("/", controller.getAll);
 

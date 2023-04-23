@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
+import { generateToken } from "../controllers/authController.js";
 import jwt from "jsonwebtoken";
 
 //get all users
@@ -71,39 +72,38 @@ export const signup_user = async (req, res, next) => {
 //User login
 export const user_login = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    console.log("user", user);
+    // Check if email and password are provided
+    const { email, password } = req.body;
+
+    // Check if email exists in database
+    const user = await User.findOne({ email });
     if (!user) {
-      res.status(401).json({
-        message: "User does not exist",
-      });
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-    const result = await bcrypt.compare(req.body.password, user.password);
-    if (result) {
-      const token = jwt.sign(
-        {
-          id: user._id,
-        },
-        process.env.JWT_KEY,
-        {
-          expiresIn: "1h",
-        }
-      );
-      res.cookie("auth_token", token, { maxAge: 5 * 60 * 60 * 1000 });
-      res.status(200).json({
-        message: "Auth Successful",
-        token: token,
-      });
-    } else {
-      res.status(401).json({
-        message: "Invalid email or password",
-      });
+
+    // Check if password is correct
+    const isValidPassword = await user.isValidPassword(password);
+    if (!isValidPassword) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      error: err,
-    });
+
+    // Generate JWT token
+    // const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "1h",
+    // });
+
+    const role = "user";
+
+    // Generate and send authentication token
+    const token = generateToken({
+      id: user._id,
+      email: user.email,
+      role: role,
+    }); // Customize token payload as needed
+    res.cookie("userToken", token); // Set the token as a cookie, or send it in the response body as needed
+    res.json({ token, role });
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -113,13 +113,11 @@ export const editUser = (req, res, next) => {
   let body = req.body;
   User.findOneAndUpdate({ _id: id }, { $set: body }, { new: true })
     .then((response) => {
-      res
-        .status(200)
-        .send({
-          success: true,
-          response,
-          message: "User updated successfully!",
-        });
+      res.status(200).send({
+        success: true,
+        response,
+        message: "User updated successfully!",
+      });
     })
     .catch((error) => {
       res.status(500).send(error);

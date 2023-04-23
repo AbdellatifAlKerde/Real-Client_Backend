@@ -4,8 +4,26 @@ import uploadImage from "../middleware/image.js";
 // get all admins
 export async function getAll(req, res, next) {
   try {
-    const trainings = await Training.find({});
-    res.status(200).json(trainings);
+    const { page, limit } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Paginate items using mongoose-paginate-v2
+    const options = {
+      page: pageNumber || 1,
+      limit: limitNumber || 10,
+    };
+
+    const items = await Training.paginate({}, options);
+
+    return res.status(200).json({
+      items: items.docs,
+      totalPages: items.totalPages,
+      currentPage: items.page,
+      limit: items.limit,
+      totalItems: items.totalDocs,
+    });
   } catch (err) {
     next(err);
   }

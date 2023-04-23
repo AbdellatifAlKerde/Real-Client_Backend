@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 import bcrypt from "bcrypt";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -24,6 +25,8 @@ const adminSchema = new Schema(
     collection: "admins",
   }
 );
+
+adminSchema.plugin(mongoosePaginate);
 
 adminSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSaltSync(10);

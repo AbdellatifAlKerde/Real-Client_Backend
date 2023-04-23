@@ -1,12 +1,33 @@
 import Admin from "../models/adminModel.js";
 import bcrypt from "bcrypt";
-import validator from "email-validator";
-import jwt from "jsonwebtoken";
+import { authenticateUser } from "../middleware/authMiddleware.js";
+import { generateToken } from "../controllers/authController.js";
+
+// import validator from "email-validator";
+// import jwt from "jsonwebtoken";
 // get all admins
 export async function getAll(req, res, next) {
   try {
-    const admins = await Admin.find({});
-    res.status(200).json(admins);
+    const { page, limit } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Paginate items using mongoose-paginate-v2
+    const options = {
+      page: pageNumber || 1,
+      limit: limitNumber || 10,
+    };
+
+    const items = await Admin.paginate({}, options);
+
+    return res.status(200).json({
+      items: items.docs,
+      totalPages: items.totalPages,
+      currentPage: items.page,
+      limit: items.limit,
+      totalItems: items.totalDocs,
+    });
   } catch (err) {
     next(err);
   }
@@ -44,11 +65,19 @@ export async function post(req, res, next) {
       password: password,
     });
     // Generate JWT token
-    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "1h",
+    // });
 
-    return res.status(201).json({ admin, token });
+    // // Generate and send authentication token
+    // const token = generateToken({
+    //   id: user._id,
+    //   email: user.email,
+    // }); // Customize token payload as needed
+    // res.cookie("token", token); // Set the token as a cookie, or send it in the response body as needed
+    // res.json({ token });
+
+    return res.status(201).json({ admin });
   } catch (err) {
     return res.status(400).send(err.message);
   }
@@ -94,11 +123,6 @@ export async function login(req, res, next) {
   try {
     // Check if email and password are provided
     const { email, password } = req.body;
-    // if (!email || !password) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Email and password are required" });
-    // }
 
     // Check if email exists in database
     const admin = await Admin.findOne({ email });
@@ -113,12 +137,30 @@ export async function login(req, res, next) {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    // const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
+    //   expiresIn: "1h",
+    // });
 
-    // Return response with token
-    return res.status(200).send({ message: "Login successful", admin, token });
+    const role = "admin";
+
+    // Generate and send authentication token
+    const token = generateToken({
+      id: admin._id,
+      email: admin.email,
+      role: role,
+    }); // Customize token payload as needed
+
+    res.cookie("JWT", token, {
+      expiresIn: 3600000,
+      httpOnly: true,
+      secure: true,
+    });
+    // console.log(req.cookies.token);
+
+    // const token = generateToken(admin);
+
+    // res.json({ token, role });
+    res.json({ id: admin._id, email: admin.email, role, token });
   } catch (error) {
     next(error);
   }
