@@ -101,7 +101,7 @@ export const user_login = async (req, res, next) => {
       role: role,
     }); // Customize token payload as needed
     res.cookie("userToken", token); // Set the token as a cookie, or send it in the response body as needed
-    res.json({ token, role });
+    res.json({ id: user._id, email: user.email, role, token });
   } catch (error) {
     next(error);
   }
