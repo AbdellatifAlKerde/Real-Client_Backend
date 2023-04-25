@@ -10,7 +10,7 @@ import trainingRoutes from "./routes/trainingRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import protectedRoutes from "./routes/protectedRoutes.js";
-
+import orderRoutes from "./routes/orderRoutes.js";
 dotenv.config();
 
 await connectDB();
@@ -36,7 +36,7 @@ app.use("/api/training", trainingRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/product", productRoutes);
 app.use("/", protectedRoutes);
-
+app.use("/api/order", orderRoutes);
 app.listen(
   PORT,
   console.log(`Server is running in ${process.env.NODE_ENV} on port ${PORT}!`)
