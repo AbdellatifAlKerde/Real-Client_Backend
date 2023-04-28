@@ -77,7 +77,7 @@ export async function post(req, res, next) {
     // res.cookie("token", token); // Set the token as a cookie, or send it in the response body as needed
     // res.json({ token });
 
-    return res.status(201).json({ admin });
+    return res.status(201).json({ admin, message: "Login successfully" });
   } catch (err) {
     return res.status(400).send(err.message);
   }

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import cors from "cors";
 import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("API is running!");

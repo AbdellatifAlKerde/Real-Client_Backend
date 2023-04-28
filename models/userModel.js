@@ -7,12 +7,12 @@ const userSchema = new Schema(
   {
     fullName: {
       type: String,
-      required: true,
+      required: [true, "Full Name is required"],
       trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "Email is required"],
       unique: true,
       trim: true,
       match:
@@ -21,14 +21,12 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     phoneNumber: {
       type: String,
-      required: true,
-      unique: true,
+      required: [true, "Phone Number is required"],
       trim: true,
-      match: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
     },
     address: {
       type: String,
-      required: true,
+      required: [true, "address field is required"],
       trim: true,
     },
   },
