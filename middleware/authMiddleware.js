@@ -5,7 +5,8 @@ import Admin from "../models/adminModel.js";
 // Middleware to authenticate user
 export const authenticateUser = async (req, res, next) => {
   try {
-    const token = req.cookies.token; // Assuming token is stored in a cookie
+    // const token = req.cookies.token; // Assuming token is stored in a cookie
+    const token = req.headers.authorization.split(" ")[1];
 
     if (!token) {
       return res.status(401).json({ message: "Unauthorized" });

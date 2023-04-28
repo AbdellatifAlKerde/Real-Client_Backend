@@ -32,17 +32,25 @@ export const getUserById = async (req, res, next) => {
 //User Registration
 export const signup_user = async (req, res, next) => {
   try {
+    const { fullName, email, password, phoneNumber, address } = req.body;
+
+    if (!fullName || !email || !password || !phoneNumber || !address) {
+      return res.status(400).json({
+        message: "All inputs is required",
+      });
+    }
+
     const existingUser = await User.findOne({ email: req.body.email });
     if (existingUser)
       return res.status(409).json({
         message: "Mail exists",
       });
 
-    if (!req.body.password) {
-      return res.status(400).json({
-        message: "Password is required",
-      });
-    }
+    // if (!req.body.password) {
+    //   return res.status(400).json({
+    //     message: "Password is required",
+    //   });
+    // }
     const hash = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
       fullName: req.body.fullName,
@@ -83,6 +91,7 @@ export const user_login = async (req, res, next) => {
 
     // Check if password is correct
     const isValidPassword = await user.isValidPassword(password);
+    console.log(isValidPassword);
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
