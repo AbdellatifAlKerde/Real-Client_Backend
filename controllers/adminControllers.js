@@ -52,7 +52,7 @@ export async function post(req, res, next) {
     const { full_name, email, password } = req.body;
 
     // check if admin already exists
-    const oldAdmin = await Admin.findOne({ full_name });
+    const oldAdmin = await Admin.findOne({ email });
 
     if (oldAdmin) {
       return res.status(409).send("Admin already exists, please login");
@@ -77,7 +77,7 @@ export async function post(req, res, next) {
     // res.cookie("token", token); // Set the token as a cookie, or send it in the response body as needed
     // res.json({ token });
 
-    return res.status(201).json({ admin, message: "Login successfully" });
+    return res.status(201).json({ admin, message: "Created successfully" });
   } catch (err) {
     return res.status(400).send(err.message);
   }
