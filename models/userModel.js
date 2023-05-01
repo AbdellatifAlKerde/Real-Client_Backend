@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const { Schema, model } = mongoose;
 
@@ -34,6 +35,8 @@ const userSchema = new Schema(
     collection: "users",
   }
 );
+
+userSchema.plugin(mongoosePaginate);
 
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSaltSync(10);

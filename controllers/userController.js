@@ -4,15 +4,31 @@ import { generateToken } from "../controllers/authController.js";
 import jwt from "jsonwebtoken";
 
 //get all users
-export const getAllUsers = (req, res, next) => {
-  User.find()
-    .then((response) => {
-      console.log(response);
-      res.status(200).send({ success: true, response });
-    })
-    .catch((error) => {
-      res.status(500).send(error);
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    // Paginate items using mongoose-paginate-v2
+    const options = {
+      page: pageNumber || 1,
+      limit: limitNumber || 10,
+    };
+
+    const items = await User.paginate({}, options);
+
+    return res.status(200).json({
+      items: items.docs,
+      totalPages: items.totalPages,
+      currentPage: items.page,
+      limit: items.limit,
+      totalItems: items.totalDocs,
     });
+  } catch (err) {
+    next(err);
+  }
 };
 
 //get an user by id

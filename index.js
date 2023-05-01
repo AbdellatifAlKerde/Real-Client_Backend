@@ -20,6 +20,10 @@ const PORT = process.env.PORT || 5000;
 
 const app = new express();
 
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
