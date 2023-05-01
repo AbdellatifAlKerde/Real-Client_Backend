@@ -51,8 +51,12 @@ export async function post(req, res, next) {
   try {
     const { full_name, email, password } = req.body;
 
+    if (full_name == "" || email == "" || password == "") {
+      return res.status(404).json({ message: "All inputs required" });
+    }
+
     // check if admin already exists
-    const oldAdmin = await Admin.findOne({ full_name });
+    const oldAdmin = await Admin.findOne({ email });
 
     if (oldAdmin) {
       return res.status(409).send("Admin already exists, please login");
@@ -64,19 +68,6 @@ export async function post(req, res, next) {
       email: email,
       password: password,
     });
-    // Generate JWT token
-    // const token = jwt.sign({ adminId: admin._id }, process.env.JWT_SECRET, {
-    //   expiresIn: "1h",
-    // });
-
-    // // Generate and send authentication token
-    // const token = generateToken({
-    //   id: user._id,
-    //   email: user.email,
-    // }); // Customize token payload as needed
-    // res.cookie("token", token); // Set the token as a cookie, or send it in the response body as needed
-    // res.json({ token });
-
     return res.status(201).json({ admin, message: "Login successfully" });
   } catch (err) {
     return res.status(400).send(err.message);
@@ -160,7 +151,13 @@ export async function login(req, res, next) {
     // const token = generateToken(admin);
 
     // res.json({ token, role });
-    res.json({ id: admin._id, email: admin.email, role, token });
+    res.json({
+      id: admin._id,
+      fullName: admin.fullName,
+      email: admin.email,
+      role,
+      token,
+    });
   } catch (error) {
     next(error);
   }
