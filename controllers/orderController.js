@@ -41,7 +41,7 @@ const getOrder = async (req, res, next) => {
 const addOrder = async (req, res, next) => {
   let body = req.body;
   try {
-    let newOrder = new Order(body);
+    let newOrder = new Order([body]);
     let response = await newOrder.save();
     res.status(201).send({ success: true, response });
   } catch (error) {
