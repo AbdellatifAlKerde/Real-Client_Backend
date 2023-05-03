@@ -49,9 +49,9 @@ export async function getAdminById(req, res) {
 //add admin
 export async function post(req, res, next) {
   try {
-    const { full_name, email, password } = req.body;
+    const { fullName, email, password } = req.body;
 
-    if (full_name == "" || email == "" || password == "") {
+    if (fullName == "" || email == "" || password == "") {
       return res.status(404).json({ message: "All inputs required" });
     }
 
@@ -64,7 +64,7 @@ export async function post(req, res, next) {
 
     // Create the admin
     const admin = await Admin.create({
-      fullName: full_name,
+      fullName: fullName,
       email: email,
       password: password,
     });
@@ -76,13 +76,30 @@ export async function post(req, res, next) {
 
 export async function put(req, res, next) {
   let { id } = req.params;
+  const { fullName, email, password } = req.body;
+
   try {
+    if (fullName == "" || email == "" || password == "") {
+      return res.status(404).json({ message: "All inputs required" });
+    }
+
+    // check if admin already exists
+    const oldAdmin = await Admin.findOne({ email });
+
+    if (oldAdmin) {
+      return res.status(409).send("Admin already exists, please login");
+    }
+
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
-    req.body.password = hashedPassword;
-    const response = await Admin.findOneAndUpdate({ _id: id }, req.body, {
-      new: true,
-    });
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // password = hashedPassword;
+    const response = await Admin.findOneAndUpdate(
+      { _id: id },
+      { fullName: fullName, email: email, password: hashedPassword },
+      {
+        new: true,
+      }
+    );
     res.status(200).send({ success: true, response });
   } catch (err) {
     console.log(err);

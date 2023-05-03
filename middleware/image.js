@@ -32,23 +32,10 @@ export function uploadImage(req, res, next) {
 
     // Set the uploaded image file path to 'req.body.image'
     req.body.image = req.file.path;
+    console.log(req.body.image);
     next();
   });
 }
-
-// export function uploadImage(req, res, next) {
-//   if (!req.body.image) {
-//     next();
-//   } else {
-//     upload.single("image")(req, res, (err) => {
-//       if (err) {
-//         return next(err);
-//       }
-//       req.body.image = req.file.path;
-//       next(err);
-//     });
-//   }
-// }
 
 const image = {
   uploadImage,

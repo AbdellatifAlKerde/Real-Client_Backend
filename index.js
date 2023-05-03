@@ -12,6 +12,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import protectedRoutes from "./routes/protectedRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import path from "path";
 dotenv.config();
 
 await connectDB();
