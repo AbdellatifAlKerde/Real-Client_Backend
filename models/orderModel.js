@@ -7,13 +7,13 @@ const orderSchema = new Schema(
     user: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
+        ref: "User",
       },
     ],
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        ref: "products",
       },
     ],
   },
@@ -23,6 +23,13 @@ const orderSchema = new Schema(
 );
 
 orderSchema.plugin(mongoosePaginate);
+orderSchema.pre(["find", "findOne"], function () {
+  this.populate("user");
+});
+
+orderSchema.pre(["find", "findOne"], function () {
+  this.populate("products");
+});
 
 const Order = model("Order", orderSchema);
 export default Order;

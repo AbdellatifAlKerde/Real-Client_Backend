@@ -1,4 +1,6 @@
 import Order from "../models/orderModel.js";
+import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
 
 const getAllOrder = async (req, res, next) => {
   try {
@@ -38,28 +40,75 @@ const getOrder = async (req, res, next) => {
   }
 };
 
+// const addOrder = async (req, res, next) => {
+//   let body = req.body;
+//   try {
+//     let newOrder = new Order([body]);
+//     let response = await newOrder.save();
+//     res.status(201).send({ success: true, response });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(400).send({ error: true, error });
+//   }
+// };
+
 const addOrder = async (req, res, next) => {
-  let body = req.body;
   try {
-    let newOrder = new Order([body]);
-    let response = await newOrder.save();
-    res.status(201).send({ success: true, response });
-  } catch (error) {
-    console.log(error);
-    res.status(400).send({ error: true, error });
+    const user = await User.findById(req.body.user);
+    console.log(req.body.user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const products = await Product.find({ _id: { $in: req.body.products } });
+    if (!products || products.length !== req.body.products.length) {
+      return res
+        .status(404)
+        .json({ message: "One or more products not found" });
+    }
+
+    const order = await Order.create({
+      user: user._id,
+      products: products.map((p) => p._id),
+    });
+
+    return res.status(201).json({ order });
+  } catch (err) {
+    return res.status(400).send(err.message);
   }
 };
 
-const putOrder = async (req, res) => {
-  let id = req.params.id;
-  let data = req.body;
+// const putOrder = async (req, res) => {
+//   let id = req.params.id;
+//   let data = req.body;
 
+//   try {
+//     console.log("data", data);
+//     let response = await Order.updateOne({ _id: id }, { $set: data });
+//     res.status(200).send({ success: true, response });
+//   } catch (error) {
+//     res.status(400).send({ error: true, error });
+//   }
+// };
+
+const putOrder = async (req, res, next) => {
   try {
-    console.log("data", data);
-    let response = await Order.updateOne({ _id: id }, { $set: data });
-    res.status(200).send({ success: true, response });
-  } catch (error) {
-    res.status(400).send({ error: true, error });
+    const orderId = req.params.id;
+    const updates = req.body;
+    const options = { new: true };
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: {
+          user: updates.user,
+          products: updates.products,
+        },
+      },
+      options
+    );
+    return res.status(200).json({ order: updatedOrder });
+  } catch (err) {
+    return res.status(400).send(err.message);
   }
 };
 
