@@ -8,6 +8,7 @@ const getAllOrder = async (req, res, next) => {
 
     const pageNumber = parseInt(page);
     const limitNumber = parseInt(limit);
+    // const hiddenOrders = Boolean(isHidden);
 
     // Paginate items using mongoose-paginate-v2
     const options = {
@@ -55,7 +56,6 @@ const getOrder = async (req, res, next) => {
 const addOrder = async (req, res, next) => {
   try {
     const user = await User.findById(req.body.user);
-    console.log(req.body.user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -70,6 +70,8 @@ const addOrder = async (req, res, next) => {
     const order = await Order.create({
       user: user._id,
       products: products.map((p) => p._id),
+      status: req.body.status,
+      isHidden: req.body.isHidden,
     });
 
     return res.status(201).json({ order });
@@ -77,19 +79,6 @@ const addOrder = async (req, res, next) => {
     return res.status(400).send(err.message);
   }
 };
-
-// const putOrder = async (req, res) => {
-//   let id = req.params.id;
-//   let data = req.body;
-
-//   try {
-//     console.log("data", data);
-//     let response = await Order.updateOne({ _id: id }, { $set: data });
-//     res.status(200).send({ success: true, response });
-//   } catch (error) {
-//     res.status(400).send({ error: true, error });
-//   }
-// };
 
 const putOrder = async (req, res, next) => {
   try {
@@ -102,6 +91,8 @@ const putOrder = async (req, res, next) => {
         $set: {
           user: updates.user,
           products: updates.products,
+          status: updates.status,
+          isHidden: updates.isHidden,
         },
       },
       options
