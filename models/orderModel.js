@@ -16,6 +16,16 @@ const orderSchema = new Schema(
         ref: "products",
       },
     ],
+    status: {
+      type: String,
+      enum: ["pending", "approved"],
+      default: "pending",
+    },
+    isHidden: {
+      type: Boolean,
+      required: [true, "Please provide if it's hidden or not"],
+      default: false,
+    },
   },
   {
     collection: "orders",
