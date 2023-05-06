@@ -62,18 +62,12 @@ export const signup_user = async (req, res, next) => {
         message: "Mail exists",
       });
 
-    // if (!req.body.password) {
-    //   return res.status(400).json({
-    //     message: "Password is required",
-    //   });
-    // }
-    const hash = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
-      fullName: req.body.fullName,
-      email: req.body.email,
-      password: hash,
-      phoneNumber: req.body.phoneNumber,
-      address: req.body.address,
+      fullName: fullName,
+      email: email,
+      password: password,
+      phoneNumber: phoneNumber,
+      address: address,
     });
     await newUser
       .save()
@@ -101,13 +95,13 @@ export const user_login = async (req, res, next) => {
 
     // Check if email exists in database
     const user = await User.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     // Check if password is correct
     const isValidPassword = await user.isValidPassword(password);
-    console.log(isValidPassword);
     if (!isValidPassword) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
