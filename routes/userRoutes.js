@@ -13,6 +13,7 @@ import {
 router.get("/", getAllUsers);
 router.get("/:id", getUserById);
 router.put("/:id", editUser);
+router.patch("/:id", editUser);
 
 router.post("/register", signup_user);
 router.post("/login", user_login);
