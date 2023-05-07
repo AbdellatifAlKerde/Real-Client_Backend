@@ -127,20 +127,53 @@ export const user_login = async (req, res, next) => {
 };
 
 //update a user by id
-export const editUser = (req, res, next) => {
+export const editUser = async (req, res, next) => {
+  // let { id } = req.params;
+  // let body = req.body;
+  // User.findOneAndUpdate({ _id: id }, { $set: body }, { new: true })
+  //   .then((response) => {
+  //     res.status(200).send({
+  //       success: true,
+  //       response,
+  //       message: "User updated successfully!",
+  //     });
+  //   })
+  //   .catch((error) => {
+  //     res.status(500).send(error);
+  //   });
+
   let { id } = req.params;
-  let body = req.body;
-  User.findOneAndUpdate({ _id: id }, { $set: body }, { new: true })
-    .then((response) => {
-      res.status(200).send({
-        success: true,
-        response,
-        message: "User updated successfully!",
-      });
-    })
-    .catch((error) => {
-      res.status(500).send(error);
-    });
+  const { fullName, email, password, address, phoneNumber } = req.body;
+
+  try {
+    // check if admin already exists
+    const oldUser = await User.findOne({ email });
+
+    if (oldUser) {
+      return res.status(409).send("User already exists, please login");
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    // password = hashedPassword;
+    const response = await User.findOneAndUpdate(
+      { _id: id },
+      {
+        fullName: fullName,
+        email: email,
+        password: hashedPassword,
+        address: address,
+        phoneNumber: phoneNumber,
+      },
+      {
+        new: true,
+      }
+    );
+    res.status(200).send({ success: true, response });
+  } catch (err) {
+    console.log(err);
+    return next(err);
+  }
 };
 
 //delete user
